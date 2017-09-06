@@ -1,0 +1,14 @@
+{
+  "name": "crosspile",
+  "version": "1.0.0",
+  "description": "A cross-compiler from JavaScript to any language (currently, Python and PHP)",
+  "main": "crosspile.js",
+  "scripts": {
+    "test": "mocha --reporter spec --watch"
+  },
+  "author": "Vitaly Gordon <rocket.mind@gmail.com> (http://github.com/xpl)",
+  "license": "Unlicense",
+  "devDependencies": {
+    "mocha": "^3.5.0"
+  }
+}
