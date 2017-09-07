@@ -9,6 +9,13 @@
   "author": "Vitaly Gordon <rocket.mind@gmail.com> (http://github.com/xpl)",
   "license": "Unlicense",
   "devDependencies": {
-    "mocha": "^3.5.0"
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-es2017": "^6.24.1",
+    "mocha": "^3.5.0",
+    "ololog": "^1.0.15"
+  },
+  "dependencies": {
+    "babel-eslint": "^7.2.3",
+    "espree": "^3.5.0"
   }
 }
