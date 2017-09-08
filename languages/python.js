@@ -25,13 +25,30 @@ Object.assign (translate, {
 
         [`class ${name} extends ${superClass.name}`, '', body.map (translate)],
 
-    MethodDefinition: ({ kind, key: { name }}) => 
+    MethodDefinition: ({ kind, key: { name }, value: { params = [] } }) => 
 
-        `def ${kind === 'constructor' ? '__init__' : fromCamelCase (name)}(self):`,
+        'def '
+            + (kind === 'constructor' ? '__init__' : fromCamelCase (name))
+            + '('
+            + [{ type: 'Identifier', name: 'self' }, ...params].map (translate).join (', ')
+            + '):'
+        ,
+
+    Identifier: ({ name }) =>
+
+        name,
+
+    AssignmentPattern: ({ left, right }) =>
+
+        translate (left) + '=' + translate (right),
+
+    ObjectExpression: () =>
+
+        '{}', // TODO
 
     unknown: ({ type }) =>
 
-        { throw new Error ('unrecognized node type: ' + n.type) }
+        { throw new Error ('unrecognized node type: ' + type) }
 })
 
 /*  ------------------------------------------------------------------------ */
