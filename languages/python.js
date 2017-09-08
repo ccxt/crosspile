@@ -1,5 +1,9 @@
 /*  ------------------------------------------------------------------------ */
 
+const fromCamelCase = s => s.replace (/[a-z][A-Z]/g, x => x[0] + '_' + x[1].toLowerCase ()) // nastyFlyingBurrito → nasty_flying_burrito
+
+/*  ------------------------------------------------------------------------ */
+
 const translate = n => (translate[n.type] || translate.unknown) (n)
 
 /*  ------------------------------------------------------------------------ */
@@ -16,7 +20,7 @@ Object.assign (translate, {
 
     MethodDefinition: ({ kind, key: { name }}) => 
 
-        `def ${kind === 'constructor' ? '__init__' : name}(self):`,
+        `def ${kind === 'constructor' ? '__init__' : fromCamelCase (name)}(self):`,
 
     unknown: ({ type }) =>
 
