@@ -1,6 +1,13 @@
 /*  ------------------------------------------------------------------------ */
 
-const fromCamelCase = s => s.replace (/[a-z][A-Z]/g, x => x[0] + '_' + x[1].toLowerCase ()) // nastyFlyingBurrito → nasty_flying_burrito
+/*  NOTE: there's a great tool for exploring the AST output generated
+          by various JS parsers, including ESpree (that we use now):
+
+          https://astexplorer.net/
+
+/*  ------------------------------------------------------------------------ */
+
+const fromCamelCase = s => s.replace (/[a-z][A-Z]/g, x => x[0] + '_' + x[1].toLowerCase ()) // fromCamelCase → from_camel_case
 
 /*  ------------------------------------------------------------------------ */
 
@@ -12,7 +19,7 @@ Object.assign (translate, {
 
     Program: ({ type, body }) =>
 
-        body.map (translate),
+        body.map (translate).reduce ([].concat),
 
     ClassDeclaration: ({ id: { name }, superClass, body: { body } }) =>
 
@@ -37,7 +44,7 @@ const indentAndJoin = depth => x => Array.isArray (x)
 
 module.exports = {
 
-    generateFrom: ast => indentAndJoin (0) (translate (ast))
+    generateFrom: ast => indentAndJoin (-1) (translate (ast))
 }
 
 /*  ------------------------------------------------------------------------ */
