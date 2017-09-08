@@ -4,7 +4,7 @@ class yobit extends Exchange {
 
         super ({
 
-            ...config,
+            //...config,
 
             'id': 'yobit',
             'name': 'YoBit',

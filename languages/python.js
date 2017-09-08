@@ -11,61 +11,60 @@ const fromCamelCase = s => s.replace (/[a-z][A-Z]/g, x => x[0] + '_' + x[1].toLo
 
 /*  ------------------------------------------------------------------------ */
 
-const gen = n => (gen[n.type] || gen.other) (n)
+const blockTree = (n, parents = []) => (match[n.type] || match.other) (n, n => blockTree (n, [n, ...parents]), parents)
 
 /*  ------------------------------------------------------------------------ */
 
-Object.assign (gen, {
+const match = {
 
-    Program: ({ type, body }) =>
+    Program: ({ type, body }, $) =>
 
-        body.map (gen),
+        body.map ($),
 
-    ClassDeclaration: ({ id, superClass, body: { body } }) =>
+    ClassDeclaration: ({ id, superClass, body: { body } }, $) =>
 
         [
-            'class '    + gen (id) +
-            ' extends ' + gen (superClass),
+            'class ' + $(id) + ' extends ' + $(superClass),
             '',
-            ...body.map (gen)
+            ...body.map ($)
         ],
 
-    MethodDefinition: ({ kind, key: { name }, value: { params = [], body: { body } } }) => 
+    MethodDefinition: ({ kind, key: { name }, value: { params = [], body: { body } } }, $) => 
 
         [
             'def '
                 + (kind === 'constructor' ? '__init__' : fromCamelCase (name))
                 + '('
-                + [{ type: 'Identifier', name: 'self' }, ...params].map (gen).join (', ')
+                + [{ type: 'Identifier', name: 'self' }, ...params].map ($).join (', ')
                 + '):',
 
-            body.map (gen)
+            body.map ($)
         ],
 
     Identifier: ({ name }) =>
 
         name,
 
-    Super: () =>
+    Super: ({}, $, parents) =>
 
-        'super',
+        'super (' + $(parents.find (n => n.type === 'ClassDeclaration').id) + ', self).__init__',
 
-    AssignmentPattern: ({ left, right }) =>
+    AssignmentPattern: ({ left, right }, $) =>
 
-        gen (left) + '=' + gen (right),
+        $(left) + '=' + $(right),
 
-    ExpressionStatement: ({ expression }) =>
+    ExpressionStatement: ({ expression }, $) =>
 
-        gen (expression),
+        $(expression),
 
-    CallExpression: ({ callee, arguments: args /* arguments is reserved keyword in strict mode, cannot use as a var name */ }) =>
+    CallExpression: ({ callee, arguments: args /* arguments is reserved keyword in strict mode, cannot use as a var name */ }, $) =>
 
-        gen (callee) + '(' + args.map (gen).join (', ') + ')',
+        [$(callee) + '(', ...args.map ($), ')'],
 
     other: ({ type, start, end, ...rest }) =>
 
         `<@! ${type}: ${Object.keys (rest).join (', ')} !@>` // to make sure it won't parse
-})
+}
 
 /*  ------------------------------------------------------------------------ */
 
@@ -77,7 +76,7 @@ const indentAndJoin = depth => x => Array.isArray (x)
 
 module.exports = {
 
-    generateFrom: ast => indentAndJoin (-2) (gen (ast))
+    generateFrom: ast => indentAndJoin (-2) (blockTree (ast))
 }
 
 /*  ------------------------------------------------------------------------ */
