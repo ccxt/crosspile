@@ -41,13 +41,23 @@ Object.assign (translate, {
 
         name,
 
+    Super: () =>
+
+        'super',
+
     AssignmentPattern: ({ left, right }) =>
 
         translate (left) + '=' + translate (right),
 
-    unknown: ({ type }) =>
+    ExpressionStatement: ({ expression }) =>
 
-        '<@! ' + type + ' !@>'
+        translate (expression),
+
+    //CallExpression: ({ 
+
+    unknown: ({ type, start, end, ...rest }) =>
+
+        `<@! ${type}: ${Object.keys (rest).join (', ')} !@>` // to make sure it won't parse
 })
 
 /*  ------------------------------------------------------------------------ */
