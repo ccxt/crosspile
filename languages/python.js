@@ -61,6 +61,18 @@ const match = {
 
         [$(callee) + '(', ...args.map ($), ')'],
 
+    ObjectExpression: ({ properties }, $) =>
+
+        ['{', ...properties.map ($), '}'],
+
+    Property: ({ key, value }, $) =>
+
+        $(key) + ': ' + $(value) + ',',
+
+    Literal: ({ value }, $) =>
+
+        "'" + value + "'",
+
     other: ({ type, start, end, ...rest }) =>
 
         `<@! ${type}: ${Object.keys (rest).join (', ')} !@>` // to make sure it won't parse
