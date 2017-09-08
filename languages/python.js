@@ -19,7 +19,7 @@ Object.assign (translate, {
 
     Program: ({ type, body }) =>
 
-        body.map (translate).reduce ([].concat),
+        body.map (translate),
 
     ClassDeclaration: ({ id: { name }, superClass, body: { body } }) =>
 
@@ -44,7 +44,7 @@ const indentAndJoin = depth => x => Array.isArray (x)
 
 module.exports = {
 
-    generateFrom: ast => indentAndJoin (-1) (translate (ast))
+    generateFrom: ast => indentAndJoin (-2) (translate (ast))
 }
 
 /*  ------------------------------------------------------------------------ */
