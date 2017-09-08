@@ -35,7 +35,7 @@ const match = {
             'def '
                 + (kind === 'constructor' ? '__init__' : fromCamelCase (name))
                 + '('
-                + [{ type: 'Identifier', name: 'self' }, ...params].map ($).join (', ')
+                + ['self', ...params.map ($)].join (', ')
                 + '):',
 
             body.map ($)
