@@ -25,8 +25,8 @@ Object.assign (gen, {
 
         [
             'class '    + gen (id) +
-            ' extends ' + gen (superClass), '',
-            
+            ' extends ' + gen (superClass),
+            '',
             ...body.map (gen)
         ],
 
@@ -60,7 +60,7 @@ Object.assign (gen, {
 
     CallExpression: ({ callee, arguments: args /* arguments is reserved keyword in strict mode, cannot use as a var name */ }) =>
 
-        gen (callee) + '(' + args.map (gen) + ')',
+        gen (callee) + '(' + args.map (gen).join (', ') + ')',
 
     other: ({ type, start, end, ...rest }) =>
 
