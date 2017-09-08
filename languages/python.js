@@ -13,6 +13,10 @@ const fromCamelCase = s => s.replace (/[a-z][A-Z]/g, x => x[0] + '_' + x[1].toLo
 
 const blockTree = (n, parents = []) => (match[n.type] || match.other) (n, n => blockTree (n, [n, ...parents]), parents)
 
+    , indentAndJoin = depth => x => Array.isArray (x)
+                                                ? x.map (indentAndJoin (depth + 1)).join ('\n')
+                                                : '    '.repeat (depth) + x
+
 /*  ------------------------------------------------------------------------ */
 
 const match = {
@@ -38,7 +42,8 @@ const match = {
                 + ['self', ...params.map ($)].join (', ')
                 + '):',
 
-            body.map ($)
+            body.map ($),
+            ''
         ],
 
     Identifier: ({ name }) =>
@@ -59,15 +64,19 @@ const match = {
 
     CallExpression: ({ callee, arguments: args /* arguments is reserved keyword in strict mode, cannot use as a var name */ }, $) =>
 
-        [$(callee) + '(', ...args.map ($), ')'],
+        $(callee) + '(' + args.map ($).join (',') + ')',
 
     ObjectExpression: ({ properties }, $) =>
 
-        ['{', ...properties.map ($), '}'],
+        '{ ' + properties.map ($).join (', ') + ' }',
+
+    ArrayExpression: ({ elements }, $) =>
+
+        '[' + elements.map ($).join (', ') + ']',
 
     Property: ({ key, value }, $) =>
 
-        $(key) + ': ' + $(value) + ',',
+        $(key) + ': ' + $(value),
 
     Literal: ({ value }, $) =>
 
@@ -77,12 +86,6 @@ const match = {
 
         `<@! ${type}: ${Object.keys (rest).join (', ')} !@>` // to make sure it won't parse
 }
-
-/*  ------------------------------------------------------------------------ */
-
-const indentAndJoin = depth => x => Array.isArray (x)
-                                                ? x.map (indentAndJoin (depth + 1)).join ('\n')
-                                                : '    '.repeat (depth) + x
 
 /*  ------------------------------------------------------------------------ */
 
