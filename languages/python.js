@@ -23,16 +23,19 @@ Object.assign (translate, {
 
     ClassDeclaration: ({ id: { name }, superClass, body: { body } }) =>
 
-        [`class ${name} extends ${superClass.name}`, '', body.map (translate)],
+        [`class ${name} extends ${superClass.name}`, '', ...body.map (translate)],
 
-    MethodDefinition: ({ kind, key: { name }, value: { params = [] } }) => 
+    MethodDefinition: ({ kind, key: { name }, value: { params = [], body: { body } } }) => 
 
-        'def '
-            + (kind === 'constructor' ? '__init__' : fromCamelCase (name))
-            + '('
-            + [{ type: 'Identifier', name: 'self' }, ...params].map (translate).join (', ')
-            + '):'
-        ,
+        [
+            'def '
+                + (kind === 'constructor' ? '__init__' : fromCamelCase (name))
+                + '('
+                + [{ type: 'Identifier', name: 'self' }, ...params].map (translate).join (', ')
+                + '):',
+
+            body.map (translate)
+        ],
 
     Identifier: ({ name }) =>
 
@@ -42,13 +45,9 @@ Object.assign (translate, {
 
         translate (left) + '=' + translate (right),
 
-    ObjectExpression: () =>
-
-        '{}', // TODO
-
     unknown: ({ type }) =>
 
-        { throw new Error ('unrecognized node type: ' + type) }
+        '<@! ' + type + ' !@>'
 })
 
 /*  ------------------------------------------------------------------------ */
