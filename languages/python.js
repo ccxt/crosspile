@@ -11,19 +11,24 @@ const fromCamelCase = s => s.replace (/[a-z][A-Z]/g, x => x[0] + '_' + x[1].toLo
 
 /*  ------------------------------------------------------------------------ */
 
-const translate = n => (translate[n.type] || translate.unknown) (n)
+const gen = n => (gen[n.type] || gen.other) (n)
 
 /*  ------------------------------------------------------------------------ */
 
-Object.assign (translate, {
+Object.assign (gen, {
 
     Program: ({ type, body }) =>
 
-        body.map (translate),
+        body.map (gen),
 
-    ClassDeclaration: ({ id: { name }, superClass, body: { body } }) =>
+    ClassDeclaration: ({ id, superClass, body: { body } }) =>
 
-        [`class ${name} extends ${superClass.name}`, '', ...body.map (translate)],
+        [
+            'class '    + gen (id) +
+            ' extends ' + gen (superClass), '',
+            
+            ...body.map (gen)
+        ],
 
     MethodDefinition: ({ kind, key: { name }, value: { params = [], body: { body } } }) => 
 
@@ -31,10 +36,10 @@ Object.assign (translate, {
             'def '
                 + (kind === 'constructor' ? '__init__' : fromCamelCase (name))
                 + '('
-                + [{ type: 'Identifier', name: 'self' }, ...params].map (translate).join (', ')
+                + [{ type: 'Identifier', name: 'self' }, ...params].map (gen).join (', ')
                 + '):',
 
-            body.map (translate)
+            body.map (gen)
         ],
 
     Identifier: ({ name }) =>
@@ -47,15 +52,17 @@ Object.assign (translate, {
 
     AssignmentPattern: ({ left, right }) =>
 
-        translate (left) + '=' + translate (right),
+        gen (left) + '=' + gen (right),
 
     ExpressionStatement: ({ expression }) =>
 
-        translate (expression),
+        gen (expression),
 
-    //CallExpression: ({ 
+    CallExpression: ({ callee, arguments: args /* arguments is reserved keyword in strict mode, cannot use as a var name */ }) =>
 
-    unknown: ({ type, start, end, ...rest }) =>
+        gen (callee) + '(' + args.map (gen) + ')',
+
+    other: ({ type, start, end, ...rest }) =>
 
         `<@! ${type}: ${Object.keys (rest).join (', ')} !@>` // to make sure it won't parse
 })
@@ -70,7 +77,7 @@ const indentAndJoin = depth => x => Array.isArray (x)
 
 module.exports = {
 
-    generateFrom: ast => indentAndJoin (-2) (translate (ast))
+    generateFrom: ast => indentAndJoin (-2) (gen (ast))
 }
 
 /*  ------------------------------------------------------------------------ */
