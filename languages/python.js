@@ -1,33 +1,39 @@
+/*  ------------------------------------------------------------------------ */
 
+const translate = n => (translate[n.type] || translate.unknown) (n)
 
-const generate = depth => (n, opts = {}) => {
+/*  ------------------------------------------------------------------------ */
 
-    const indent = '    '.repeat (depth)
+Object.assign (translate, {
 
-    switch (n.type) {
+    Program: ({ type, body }) =>
 
-        case 'Program':
+        body.map (translate),
 
-            return n.body.map (generate (depth)).join ('\n')
+    ClassDeclaration: ({ id: { name }, superClass, body: { body } }) =>
 
-        case 'ClassDeclaration':
+        [`class ${name} extends ${superClass.name}`, '', body.map (translate)],
 
-            return indent + `class ${n.id.name} extends ${n.superClass.name}:\n\n` + n.body.body.map (generate (depth + 1)).join ('\n')
+    MethodDefinition: ({ kind, key: { name }}) => 
 
-        case 'MethodDefinition':
+        `def ${kind === 'constructor' ? '__init__' : name}(self):`,
 
-            const name = n.kind === 'constructor' ? '__init__' : n.key.name
+    unknown: ({ type }) =>
 
-            return indent + `def ${name}(self):\n`
+        { throw new Error ('unrecognized node type: ' + n.type) }
+})
 
-        default:
+/*  ------------------------------------------------------------------------ */
 
-            console.error (n)
-            throw new Error ('unrecognized node type: ' + n.type)
-    }
-}
+const indentAndJoin = depth => x => Array.isArray (x)
+                                                ? x.map (indentAndJoin (depth + 1)).join ('\n')
+                                                : '    '.repeat (depth) + x
+
+/*  ------------------------------------------------------------------------ */
 
 module.exports = {
 
-    generateFrom: generate (0)
+    generateFrom: ast => indentAndJoin (0) (translate (ast))
 }
+
+/*  ------------------------------------------------------------------------ */
