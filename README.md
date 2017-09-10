@@ -11,3 +11,7 @@ To replace the current regexp-based [`transpile.js`](https://github.com/kroitor/
 ## Current State
 
 Trying to figure out how to do AST transformation properly, while maintaining a human-readable formatting and comments attached to proper places (which is not an easy thing to do...)
+
+## Hacking The Project
+
+Please keep in mind that at the moment I do not accept contributions, as the project structure is not established yet and things change rapidly, as I'm experimenting with things.
