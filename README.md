@@ -2,7 +2,7 @@
 
 A cross-compiler from JavaScript to any language (currently, Python and PHP).
 
-WORK IN PROGRESS (early stages)
+**WORK IN PROGRESS (early stages, not usable/hackable yet)**
 
 ## Goal
 
@@ -14,4 +14,4 @@ Trying to figure out how to do AST transformation properly, while maintaining a 
 
 ## Hacking The Project
 
-Please keep in mind that at the moment I do not accept contributions, as the project structure is not established yet and everything changes rapidly, as I'm experimenting with things.
+Please keep in mind that at the moment we do not accept contributions, as the project structure is not established yet and everything changes rapidly, as we're experimenting with things.
